@@ -11,7 +11,7 @@ void OBD_SendRequest(byte pid)
     {
         0x02,       // Number of additional bytes
         0x01,       // Mode 01 (Show Current Data)
-        pid,        // PID
+        pid,        // PID    //05 for coolent temp
         0x00,
         0x00,
         0x00,
@@ -54,7 +54,7 @@ void OBD_ProcessResponse(unsigned long id, byte len, byte *data)
     byte mode = data[1];
     byte pid  = data[2];
 
-    if(mode != 0x41)
+    if(mode != 0x41)    // offset + 01 mode (current value+-)
     {
         Serial.println("Invalid Response Mode");
         return;

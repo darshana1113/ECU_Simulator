@@ -1,7 +1,7 @@
 #ifndef CAN_H         // If CAN_H has not been defined, compile this file.
 #define CAN_H         
 
-#include <SPI.h>       // esp8266 can not directly talk with mcp2515 so for communication we need to use SPI protoco
+#include <SPI.h>       // esp8266 can not directly talk with mcp2515 so for communication we need to use SPI protocol
 #include <mcp_can.h>
 
 // MCP2515 CS Pin
@@ -18,10 +18,10 @@ extern MCP_CAN CAN;         // all files need to access to the same CAN object t
                           // Using extern allows other files to access the same object without creating duplicate instances
 
 // Initialize CAN
-bool CAN_Init();
+bool CAN_Init();     // this fun will return either CAN initialized successfully or failed 
 
 // Receive CAN Frame
-bool CAN_Receive(unsigned long *id, byte *len, byte *data);
+bool CAN_Receive(unsigned long *id, byte *len, byte *data);  // Pointers are used because the function must update the caller's variables directly.
 
 // Send CAN Frame
 bool CAN_Send(unsigned long id, byte len, byte *data);

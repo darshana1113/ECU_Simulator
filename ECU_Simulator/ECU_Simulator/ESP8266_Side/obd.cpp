@@ -1,3 +1,6 @@
+// implements the OBD-2 protocol. CAN req is received this module checks whether it is a valid OBD-2 request ,
+// identifies the requested mode and pid , and create a response frame and send it back over the can bus 
+
 #include "obd.h"
 #include "can.h"
 #include "sensor.h"
@@ -11,8 +14,11 @@ void OBD_ProcessRequest(unsigned long id, byte len, byte *data)
     if(id != 0x7DF)
         return;
 
-    byte mode = data[1];
-    byte pid  = data[2];
+    byte mode = data[1];// current data     // Byte	Value	Meaning
+    byte pid  = data[2];                  //   0	     02	     Number of useful bytes
+                                         //    1	     01	     OBD Mode
+                                        //    2	     05 	 PID(coolant Temp)
+    
 
     Serial.println();
     Serial.println("========== OBD Request ==========");
@@ -20,14 +26,14 @@ void OBD_ProcessRequest(unsigned long id, byte len, byte *data)
     Serial.print("Mode : 0x");
     Serial.println(mode, HEX);
 
-    Serial.print("PID  : 0x");
+    Serial.print("PID  : 0x");      // print pid id of coolant temp , RPM , fuel 
     Serial.println(pid, HEX);
 
     //--------------------------------
     // Only support Mode 01
     //--------------------------------
 
-    if(mode != 0x01)
+    if(mode != 0x01)          // 01 mode means show current data
     {
         Serial.println("Unsupported Mode");
         return;
@@ -57,17 +63,18 @@ void OBD_ProcessRequest(unsigned long id, byte len, byte *data)
 
             byte response[8] =
             {
-                0x03,
-                0x41,
-                0x05,
-                A,
+                0x03,    // three useful bytes : 41 , 05 , A
+                0x41,    // 40( offset by OBD2) + 01(current data) = 41
+                0x05,    // coolant temp
+                A,       // A = Temp + 40 
                 0x00,
                 0x00,
                 0x00,
-                0x00
+                0x00     // Creates an array of 8 bytes
             };
 
-            CAN_Send(0x7E8,8,response);
+            CAN_Send(0x7E8,8,response);         // 0x7DF : request from scanner 
+                                               // 0x7E8 : response from ECU
 
             Serial.print("Coolant Temperature : ");
             Serial.print(temp);
