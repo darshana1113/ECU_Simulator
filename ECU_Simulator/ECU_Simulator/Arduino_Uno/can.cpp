@@ -1,6 +1,6 @@
 #include "can.h"
 
-MCP_CAN CAN(CAN_CS);
+MCP_CAN CAN(CAN_CS);        // create a CAN obj and class MCP_CAN
 
 bool CAN_Init()
 {
@@ -19,7 +19,7 @@ bool CAN_Init()
 
 bool CAN_Send(unsigned long id, byte len, byte *data)
 {
-    return (CAN.sendMsgBuf(id, 0, len, data) == CAN_OK);
+    return (CAN.sendMsgBuf(id, 0, len, data) == CAN_OK);  // 0 : std 11-bit CAN-ID  , 1 : extended 29-bit CAN-ID
 }
 
 bool CAN_Receive(unsigned long *id, byte *len, byte *data)
